@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Luyện Tập Câu Đảo Ngữ - Bảo Mật</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .slide-up { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .correct { background-color: #10b981 !important; color: white; }
+        .incorrect { background-color: #ef4444 !important; color: white; }
+        .chart-container { height: 400px !important; }
+        body { min-height: 100vh; overflow-x: hidden; }
+        .no-scroll { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 font-sans">
+    <div id="app" class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-lg border-b-4 border-indigo-500">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-language text-3xl text-indigo-600"></i>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800">Game Luyện Tập Câu Đảo Ngữ</h1>
+                            <p class="text-sm text-gray-600">Hệ thống bảo mật & theo dõi</p>
+                        </div>
+                    </div>
+                    <div id="userInfo" class="hidden flex items-center space-x-4">
+                        <span id="currentUser" class="text-gray-700 font-medium"></span>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-6">
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="fade-in">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="bg-white rounded-xl shadow-xl p-8 mb-8">
+                        <i class="fas fa-graduation-cap text-6xl text-indigo-600 mb-4"></i>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Chào mừng đến với Game Câu Đảo Ngữ!</h2>
+                        <p class="text-gray-600 text-lg mb-8">Luyện tập các dạng câu đảo ngữ tiếng Anh với hệ thống chấm điểm và theo dõi tiến độ.</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Player Login -->
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 text-white">
+                                <i class="fas fa-user-graduate text-4xl mb-4"></i>
+                                <h3 class="text-xl font-bold mb-3">Người Học</h3>
+                                <p class="mb-4">Tham gia game luyện tập câu đảo ngữ</p>
+                                <button onclick="showPlayerLogin()" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                    Bắt đầu học <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+
+                            <!-- Admin Login -->
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl p-6 text-white">
+                                <i class="fas fa-user-shield text-4xl mb-4"></i>
+                                <h3 class="text-xl font-bold mb-3">Quản Trị Viên</h3>
+                                <p class="mb-4">Truy cập bảng điều khiển và thống kê</p>
+                                <button onclick="showAdminLogin()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                    Đăng nhập Admin <i class="fas fa-lock ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player Login -->
+            <div id="playerLoginScreen" class="hidden fade-in">
+                <div class="max-w-md mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-user-graduate text-4xl text-blue-600 mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-800">Đăng nhập Người học</h2>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Tên của bạn</label>
+                                <input type="text" id="playerName" placeholder="Nhập tên của bạn..." 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <button onclick="loginPlayer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-play mr-2"></i>Bắt đầu Game
+                            </button>
+                            
+                            <button onclick="showWelcome()" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Login -->
+            <div id="adminLoginScreen" class="hidden fade-in">
+                <div class="max-w-md mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-user-shield text-4xl text-purple-600 mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-800">Đăng nhập Admin</h2>
+                            <p class="text-gray-600 mt-2">Truy cập bảng điều khiển quản trị</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Tên Admin</label>
+                                <input type="text" id="adminUsername" placeholder="Nhập tên admin..." 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Mật khẩu</label>
+                                <input type="password" id="adminPassword" placeholder="Nhập mật khẩu..." 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                                <div class="flex">
+                                    <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                                    <div class="text-sm text-blue-700">
+                                        <p><strong>Demo:</strong></p>
+                                        <p>Username: <code class="bg-blue-100 px-1 rounded">admin</code></p>
+                                        <p>Password: <code class="bg-blue-100 px-1 rounded">admin123</code></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="loginAdmin()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Đăng nhập
+                            </button>
+                            
+                            <button onclick="showWelcome()" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Menu -->
+            <div id="gameMenuScreen" class="hidden fade-in">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-gray-800 mb-4">Chọn cấp độ luyện tập</h2>
+                            <p class="text-gray-600">Hãy chọn cấp độ phù hợp với trình độ của bạn</p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                            <!-- Easy Level -->
+                            <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-xl p-6 text-white text-center">
+                                <i class="fas fa-leaf text-4xl mb-4"></i>
+                                <h3 class="text-xl font-bold mb-2">Dễ</h3>
+                                <p class="mb-4">10 câu hỏi<br>1 điểm/câu</p>
+                                <button onclick="startGame('easy')" class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                    Bắt đầu
+                                </button>
+                            </div>
+
+                            <!-- Medium Level -->
+                            <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 text-white text-center">
+                                <i class="fas fa-star text-4xl mb-4"></i>
+                                <h3 class="text-xl font-bold mb-2">Trung bình</h3>
+                                <p class="mb-4">15 câu hỏi<br>2 điểm/câu</p>
+                                <button onclick="startGame('medium')" class="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                    Bắt đầu
+                                </button>
+                            </div>
+
+                            <!-- Hard Level -->
+                            <div class="bg-gradient-to-r from-red-500 to-red-700 rounded-xl p-6 text-white text-center">
+                                <i class="fas fa-fire text-4xl mb-4"></i>
+                                <h3 class="text-xl font-bold mb-2">Khó</h3>
+                                <p class="mb-4">20 câu hỏi<br>3 điểm/câu</p>
+                                <button onclick="startGame('hard')" class="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                    Bắt đầu
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Leaderboard Preview -->
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">
+                                <i class="fas fa-trophy text-yellow-500 mr-2"></i>Bảng xếp hạng
+                            </h3>
+                            <div id="leaderboardPreview" class="space-y-2">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="gameScreen" class="hidden fade-in">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <!-- Progress Bar -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-600">Tiến trình</span>
+                                <span id="questionCounter" class="text-sm font-medium text-gray-600">1/10</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div id="progressBar" class="bg-blue-600 h-3 rounded-full transition-all duration-300" style="width: 10%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Question -->
+                        <div class="mb-8">
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Câu hỏi:</h3>
+                                <p id="questionText" class="text-gray-700 text-lg"></p>
+                            </div>
+
+                            <!-- Answer Options -->
+                            <div id="answerOptions" class="space-y-3">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Game Info -->
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-user mr-1"></i>
+                                <span id="gamePlayerName"></span>
+                            </div>
+                            <div>
+                                <i class="fas fa-layer-group mr-1"></i>
+                                Cấp độ: <span id="gameLevelName"></span>
+                            </div>
+                            <div>
+                                <i class="fas fa-star mr-1"></i>
+                                Điểm: <span id="currentScore">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="resultScreen" class="hidden fade-in">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8 text-center">
+                        <div id="resultIcon" class="text-6xl mb-4">🏆</div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Kết quả của bạn</h2>
+                        
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-blue-50 rounded-xl p-6">
+                                <i class="fas fa-star text-3xl text-blue-600 mb-2"></i>
+                                <div class="text-2xl font-bold text-gray-800" id="finalScore"></div>
+                                <div class="text-gray-600">Điểm số</div>
+                            </div>
+                            
+                            <div class="bg-green-50 rounded-xl p-6">
+                                <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
+                                <div class="text-2xl font-bold text-gray-800" id="correctAnswers"></div>
+                                <div class="text-gray-600">Câu đúng</div>
+                            </div>
+                            
+                            <div class="bg-purple-50 rounded-xl p-6">
+                                <i class="fas fa-percentage text-3xl text-purple-600 mb-2"></i>
+                                <div class="text-2xl font-bold text-gray-800" id="accuracyRate"></div>
+                                <div class="text-gray-600">Độ chính xác</div>
+                            </div>
+                        </div>
+
+                        <div id="rankingBadge" class="inline-block px-6 py-3 rounded-full text-white font-bold text-lg mb-6">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+
+                        <div class="space-y-4">
+                            <button onclick="showGameMenu()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors mr-4">
+                                <i class="fas fa-redo mr-2"></i>Chơi lại
+                            </button>
+                            <button onclick="showLeaderboard()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-trophy mr-2"></i>Xem bảng xếp hạng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Screen -->
+            <div id="leaderboardScreen" class="hidden fade-in">
+                <div class="max-w-6xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <div class="text-center mb-8">
+                            <i class="fas fa-trophy text-5xl text-yellow-500 mb-4"></i>
+                            <h2 class="text-3xl font-bold text-gray-800">Bảng xếp hạng</h2>
+                            <p class="text-gray-600 mt-2">Top người chơi xuất sắc nhất</p>
+                        </div>
+
+                        <div id="leaderboardContent" class="space-y-4">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+
+                        <div class="text-center mt-8">
+                            <button onclick="showGameMenu()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>Quay lại Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="hidden fade-in">
+                <div class="max-w-7xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-800">
+                                    <i class="fas fa-tachometer-alt text-purple-600 mr-3"></i>Bảng điều khiển Admin
+                                </h2>
+                                <p class="text-gray-600 mt-2">Quản lý và theo dõi hoạt động người chơi</p>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Cards -->
+                        <div class="grid md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                                <i class="fas fa-users text-3xl mb-2"></i>
+                                <div class="text-2xl font-bold" id="totalPlayers">0</div>
+                                <div class="text-blue-100">Tổng người chơi</div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
+                                <i class="fas fa-gamepad text-3xl mb-2"></i>
+                                <div class="text-2xl font-bold" id="totalGames">0</div>
+                                <div class="text-green-100">Tổng lượt chơi</div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl p-6 text-white">
+                                <i class="fas fa-chart-line text-3xl mb-2"></i>
+                                <div class="text-2xl font-bold" id="avgScore">0</div>
+                                <div class="text-yellow-100">Điểm TB</div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                                <i class="fas fa-percentage text-3xl mb-2"></i>
+                                <div class="text-2xl font-bold" id="avgAccuracy">0%</div>
+                                <div class="text-purple-100">Độ chính xác TB</div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Section -->
+                        <div class="grid md:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-gray-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4">Phân bố theo cấp độ</h3>
+                                <div class="chart-container">
+                                    <canvas id="levelChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4">Phân bố xếp loại</h3>
+                                <div class="chart-container">
+                                    <canvas id="rankingChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Player Records Table -->
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">Danh sách người chơi</h3>
+                                <div class="space-x-2">
+                                    <button onclick="exportData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                        <i class="fas fa-download mr-2"></i>Xuất dữ liệu
+                                    </button>
+                                    <button onclick="clearAllData()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                        <i class="fas fa-trash mr-2"></i>Xóa tất cả
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STT</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên người chơi</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cấp độ</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Điểm số</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Độ chính xác</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Xếp loại</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="playerRecordsTable" class="bg-white divide-y divide-gray-200">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let isAdmin = false;
+        let currentLevel = null;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswersCount = 0;
+        let questions = [];
+        let userAnswers = [];
+
+        // Questions database
+        const questionDatabase = {
+            easy: [
+                {
+                    question: "Never _____ such a beautiful sunset before.",
+                    options: ["I have seen", "have I seen", "I saw", "did I see"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Never' đặt ở đầu câu."
+                },
+                {
+                    question: "Only when the rain stopped _____ out.",
+                    options: ["we went", "did we go", "we go", "do we go"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only when' cần đảo trợ động từ."
+                },
+                {
+                    question: "Seldom _____ such kindness from strangers.",
+                    options: ["we see", "do we see", "we saw", "did we see"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Seldom' ở thì hiện tại."
+                },
+                {
+                    question: "Not only _____ intelligent, but also very kind.",
+                    options: ["she is", "is she", "she was", "was she"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not only'."
+                },
+                {
+                    question: "Hardly _____ the door when it started raining.",
+                    options: ["I had opened", "had I opened", "I opened", "did I open"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Hardly' và thì quá khứ hoàn thành."
+                },
+                {
+                    question: "Little _____ that this would change everything.",
+                    options: ["I knew", "did I know", "I know", "do I know"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Little' mang nghĩa phủ định."
+                },
+                {
+                    question: "At no time _____ give up hope.",
+                    options: ["we should", "should we", "we will", "will we"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'At no time'."
+                },
+                {
+                    question: "Nowhere _____ such delicious food.",
+                    options: ["you can find", "can you find", "you will find", "will you find"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Nowhere'."
+                },
+                {
+                    question: "Only then _____ the truth.",
+                    options: ["I realized", "did I realize", "I realize", "do I realize"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only then'."
+                },
+                {
+                    question: "Not until midnight _____ finish the work.",
+                    options: ["I could", "could I", "I can", "can I"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not until'."
+                }
+            ],
+            medium: [
+                {
+                    question: "So beautiful _____ that everyone stopped to admire it.",
+                    options: ["the painting was", "was the painting", "the painting is", "is the painting"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'So + adjective' đặt ở đầu câu."
+                },
+                {
+                    question: "Were _____ to happen, we would be prepared.",
+                    options: ["such a disaster", "a disaster such", "this disaster", "disaster this"],
+                    correct: 0,
+                    explanation: "Câu điều kiện đảo ngữ với 'Were'."
+                },
+                {
+                    question: "Not once _____ complain about the working conditions.",
+                    options: ["he did", "did he", "he does", "does he"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not once'."
+                },
+                {
+                    question: "Under no circumstances _____ reveal this secret.",
+                    options: ["you should", "should you", "you must", "must you"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Under no circumstances'."
+                },
+                {
+                    question: "Had I known earlier, _____ differently.",
+                    options: ["I would act", "I would have acted", "I will act", "I had acted"],
+                    correct: 1,
+                    explanation: "Câu điều kiện đảo ngữ loại 3 với 'Had'."
+                },
+                {
+                    question: "Such _____ the power of love that it can move mountains.",
+                    options: ["is", "was", "are", "were"],
+                    correct: 0,
+                    explanation: "Câu đảo ngữ với 'Such' ở thì hiện tại."
+                },
+                {
+                    question: "Only by working together _____ solve this problem.",
+                    options: ["we can", "can we", "we could", "could we"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only by + V-ing'."
+                },
+                {
+                    question: "No sooner _____ than it started to rain.",
+                    options: ["we had arrived", "had we arrived", "we arrived", "did we arrive"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'No sooner...than' và thì quá khứ hoàn thành."
+                },
+                {
+                    question: "Rarely _____ such a talented musician.",
+                    options: ["we have met", "have we met", "we met", "did we meet"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Rarely' ở thì hiện tại hoàn thành."
+                },
+                {
+                    question: "Should _____ need any help, please let me know.",
+                    options: ["you", "you be", "you have", "you will"],
+                    correct: 0,
+                    explanation: "Câu điều kiện đảo ngữ với 'Should'."
+                },
+                {
+                    question: "In no way _____ responsible for this mistake.",
+                    options: ["I am", "am I", "I was", "was I"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'In no way'."
+                },
+                {
+                    question: "Only after graduating _____ how much I learned.",
+                    options: ["I realized", "did I realize", "I realize", "do I realize"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only after + V-ing'."
+                },
+                {
+                    question: "Not only _____ the exam, but she also got the highest score.",
+                    options: ["she passed", "did she pass", "she passes", "does she pass"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not only...but also'."
+                },
+                {
+                    question: "Here _____ the solution to our problem.",
+                    options: ["comes", "come", "is coming", "are coming"],
+                    correct: 0,
+                    explanation: "Câu đảo ngữ với 'Here' và động từ 'come'."
+                },
+                {
+                    question: "Never before _____ such a challenging situation.",
+                    options: ["we have faced", "have we faced", "we faced", "did we face"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Never before' và thì hiện tại hoàn thành."
+                }
+            ],
+            hard: [
+                {
+                    question: "Not until the last minute _____ that the meeting had been cancelled.",
+                    options: ["we were informed", "were we informed", "we are informed", "are we informed"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ phức tạp với 'Not until' và bị động."
+                },
+                {
+                    question: "Were it not for your support, _____ this project.",
+                    options: ["I couldn't complete", "I couldn't have completed", "I can't complete", "I wouldn't complete"],
+                    correct: 1,
+                    explanation: "Câu điều kiện đảo ngữ loại 3 với 'Were it not for'."
+                },
+                {
+                    question: "Scarcely _____ the meeting when the fire alarm went off.",
+                    options: ["we had begun", "had we begun", "we began", "did we begin"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Scarcely...when' và thì quá khứ hoàn thành."
+                },
+                {
+                    question: "Only with great difficulty _____ the problem.",
+                    options: ["we solved", "did we solve", "we could solve", "could we solve"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only with + noun' và trợ động từ 'did'."
+                },
+                {
+                    question: "So rapidly _____ that we couldn't keep up.",
+                    options: ["the technology developed", "did the technology develop", "the technology develops", "does the technology develop"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'So + adverb' đặt ở đầu câu."
+                },
+                {
+                    question: "Little _____ that this decision would affect so many people.",
+                    options: ["we realized", "did we realize", "we realize", "do we realize"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Little' mang nghĩa phủ định mạnh."
+                },
+                {
+                    question: "Not a single word _____ during the entire meeting.",
+                    options: ["he spoke", "did he speak", "he speaks", "does he speak"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not a single + noun'."
+                },
+                {
+                    question: "Under no circumstances _____ to compromise on safety.",
+                    options: ["we are willing", "are we willing", "we will be willing", "will we be willing"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Under no circumstances' và thì hiện tại."
+                },
+                {
+                    question: "Such was his dedication _____ he worked through the night.",
+                    options: ["that", "as", "so", "which"],
+                    correct: 0,
+                    explanation: "Cấu trúc 'Such was...that' trong câu đảo ngữ."
+                },
+                {
+                    question: "Only by implementing these changes _____ improve our performance.",
+                    options: ["we can", "can we", "we will", "will we"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only by + V-ing' và động từ khiếm khuyết."
+                },
+                {
+                    question: "Had it not been for the traffic jam, _____ on time.",
+                    options: ["we would arrive", "we would have arrived", "we will arrive", "we had arrived"],
+                    correct: 1,
+                    explanation: "Câu điều kiện đảo ngữ loại 3 với 'Had it not been for'."
+                },
+                {
+                    question: "Never in my wildest dreams _____ that this would happen.",
+                    options: ["I imagined", "did I imagine", "I imagine", "do I imagine"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Never in my wildest dreams'."
+                },
+                {
+                    question: "Not only _____ the test, but he also helped his classmates.",
+                    options: ["he passed", "did he pass", "he has passed", "has he passed"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not only...but also' và thì quá khứ đơn."
+                },
+                {
+                    question: "So intense _____ that everyone could feel it.",
+                    options: ["the heat was", "was the heat", "the heat is", "is the heat"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'So + adjective' và động từ 'be'."
+                },
+                {
+                    question: "Only when all the evidence was presented _____ the truth.",
+                    options: ["we understood", "did we understand", "we understand", "do we understand"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only when' và mệnh đề phức tạp."
+                },
+                {
+                    question: "Nowhere else _____ such hospitality.",
+                    options: ["you will find", "will you find", "you can find", "can you find"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Nowhere else' và động từ khiếm khuyết."
+                },
+                {
+                    question: "Not since the war _____ such destruction.",
+                    options: ["we have seen", "have we seen", "we saw", "did we see"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Not since' và thì hiện tại hoàn thành."
+                },
+                {
+                    question: "Should the weather improve, _____ go for a picnic.",
+                    options: ["we can", "we could", "we will", "we would"],
+                    correct: 0,
+                    explanation: "Câu điều kiện đảo ngữ với 'Should' cho tương lai."
+                },
+                {
+                    question: "Such is the nature of life _____ we must accept change.",
+                    options: ["that", "as", "so", "which"],
+                    correct: 0,
+                    explanation: "Cấu trúc 'Such is...that' biểu thị kết quả."
+                },
+                {
+                    question: "Only through hard work and dedication _____ achieve our goals.",
+                    options: ["we can", "can we", "we will", "will we"],
+                    correct: 1,
+                    explanation: "Câu đảo ngữ với 'Only through + noun phrase'."
+                }
+            ]
+        };
+
+        // Initialize the app
+        function initApp() {
+            showWelcome();
+            loadLeaderboard();
+        }
+
+        // Navigation functions
+        function showWelcome() {
+            hideAllScreens();
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+        }
+
+        function showPlayerLogin() {
+            hideAllScreens();
+            document.getElementById('playerLoginScreen').classList.remove('hidden');
+            document.getElementById('playerName').focus();
+        }
+
+        function showAdminLogin() {
+            hideAllScreens();
+            document.getElementById('adminLoginScreen').classList.remove('hidden');
+            document.getElementById('adminUsername').focus();
+        }
+
+        function showGameMenu() {
+            hideAllScreens();
+            document.getElementById('gameMenuScreen').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            updateLeaderboardPreview();
+        }
+
+        function showLeaderboard() {
+            hideAllScreens();
+            document.getElementById('leaderboardScreen').classList.remove('hidden');
+            displayLeaderboard();
+        }
+
+        function showAdminDashboard() {
+            hideAllScreens();
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            loadAdminData();
+        }
+
+        function hideAllScreens() {
+            const screens = ['welcomeScreen', 'playerLoginScreen', 'adminLoginScreen', 'gameMenuScreen', 'gameScreen', 'resultScreen', 'leaderboardScreen', 'adminDashboard'];
+            screens.forEach(screen => {
+                document.getElementById(screen).classList.add('hidden');
+            });
+        }
+
+        // Login functions
+        function loginPlayer() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                alert('Vui lòng nhập tên của bạn!');
+                return;
+            }
+            
+            currentUser = name;
+            isAdmin = false;
+            document.getElementById('currentUser').textContent = `Người chơi: ${name}`;
+            showGameMenu();
+        }
+
+        function loginAdmin() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            
+            // Demo credentials
+            if (username === 'admin' && password === 'admin123') {
+                currentUser = username;
+                isAdmin = true;
+                document.getElementById('currentUser').textContent = `Admin: ${username}`;
+                showAdminDashboard();
+            } else {
+                alert('Tên đăng nhập hoặc mật khẩu không đúng!');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            isAdmin = false;
+            showWelcome();
+        }
+
+        // Game functions
+        function startGame(level) {
+            currentLevel = level;
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            userAnswers = [];
+            
+            // Get questions for the level
+            questions = [...questionDatabase[level]];
+            
+            // Shuffle questions
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+            
+            hideAllScreens();
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            // Update game info
+            document.getElementById('gamePlayerName').textContent = currentUser;
+            document.getElementById('gameLevelName').textContent = level === 'easy' ? 'Dễ' : level === 'medium' ? 'Trung bình' : 'Khó';
+            document.getElementById('currentScore').textContent = '0';
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResult();
+                return;
+            }
+            
+            const question = questions[currentQuestionIndex];
+            const totalQuestions = questions.length;
+            const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            
+            // Update progress
+            document.getElementById('questionCounter').textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            // Update question
+            document.getElementById('questionText').textContent = question.question;
+            
+            // Update options
+            const optionsContainer = document.getElementById('answerOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full text-left p-4 border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors';
+                button.innerHTML = `<span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option}`;
+                button.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            const isCorrect = selectedIndex === question.correct;
+            
+            // Store user answer
+            userAnswers.push({
+                questionIndex: currentQuestionIndex,
+                selectedAnswer: selectedIndex,
+                correct: isCorrect
+            });
+            
+            // Update score
+            if (isCorrect) {
+                correctAnswersCount++;
+                const pointsPerQuestion = currentLevel === 'easy' ? 1 : currentLevel === 'medium' ? 2 : 3;
+                score += pointsPerQuestion;
+                document.getElementById('currentScore').textContent = score;
+            }
+            
+            // Visual feedback
+            const buttons = document.querySelectorAll('#answerOptions button');
+            buttons.forEach((button, index) => {
+                if (index === question.correct) {
+                    button.classList.add('correct');
+                } else if (index === selectedIndex && !isCorrect) {
+                    button.classList.add('incorrect');
+                }
+                button.disabled = true;
+            });
+            
+            // Move to next question after delay
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1500);
+        }
+
+        function showResult() {
+            const totalQuestions = questions.length;
+            const accuracy = Math.round((correctAnswersCount / totalQuestions) * 100);
+            
+            // Save result to localStorage
+            saveGameResult(currentUser, currentLevel, score, correctAnswersCount, totalQuestions, accuracy);
+            
+            // Show result screen
+            hideAllScreens();
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            // Update result display
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctAnswers').textContent = `${correctAnswersCount}/${totalQuestions}`;
+            document.getElementById('accuracyRate').textContent = `${accuracy}%`;
+            
+            // Update ranking
+            const ranking = getRanking(accuracy);
+            const rankingBadge = document.getElementById('rankingBadge');
+            rankingBadge.textContent = ranking.text;
+            rankingBadge.className = `inline-block px-6 py-3 rounded-full text-white font-bold text-lg mb-6 ${ranking.class}`;
+            
+            // Update icon
+            document.getElementById('resultIcon').textContent = ranking.icon;
+        }
+
+        function getRanking(accuracy) {
+            if (accuracy >= 90) return { text: '🏆 XUẤT SẮC', class: 'bg-yellow-500', icon: '🏆' };
+            if (accuracy >= 80) return { text: '🥈 GIỎI', class: 'bg-gray-400', icon: '🥈' };
+            if (accuracy >= 70) return { text: '🥉 KHÁ', class: 'bg-yellow-600', icon: '🥉' };
+            if (accuracy >= 60) return { text: '📋 TRUNG BÌNH', class: 'bg-blue-500', icon: '📋' };
+            return { text: '📚 CẦN CỐ GẮNG', class: 'bg-red-500', icon: '📚' };
+        }
+
+        // Data management
+        function saveGameResult(playerName, level, score, correct, total, accuracy) {
+            const results = getGameResults();
+            const result = {
+                id: Date.now(),
+                playerName,
+                level,
+                score,
+                correct,
+                total,
+                accuracy,
+                timestamp: new Date().toISOString(),
+                ranking: getRanking(accuracy).text
+            };
+            
+            results.push(result);
+            localStorage.setItem('inversionGameResults', JSON.stringify(results));
+        }
+
+        function getGameResults() {
+            const results = localStorage.getItem('inversionGameResults');
+            return results ? JSON.parse(results) : [];
+        }
+
+        function loadLeaderboard() {
+            const results = getGameResults();
+            return results.sort((a, b) => b.score - a.score);
+        }
+
+        function updateLeaderboardPreview() {
+            const results = loadLeaderboard().slice(0, 5);
+            const container = document.getElementById('leaderboardPreview');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">Chưa có người chơi nào</p>';
+                return;
+            }
+            
+            container.innerHTML = results.map((result, index) => `
+                <div class="flex justify-between items-center bg-white p-3 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-lg font-bold ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-yellow-600' : 'text-gray-600'}">${index + 1}</span>
+                        <span class="font-medium">${result.playerName}</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-blue-600">${result.score} điểm</div>
+                        <div class="text-xs text-gray-500">${result.level.toUpperCase()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayLeaderboard() {
+            const results = loadLeaderboard();
+            const container = document.getElementById('leaderboardContent');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center text-lg">Chưa có người chơi nào</p>';
+                return;
+            }
+            
+            container.innerHTML = results.map((result, index) => `
+                <div class="flex justify-between items-center bg-gradient-to-r ${index === 0 ? 'from-yellow-100 to-yellow-200 border-yellow-300' : index === 1 ? 'from-gray-100 to-gray-200 border-gray-300' : index === 2 ? 'from-orange-100 to-orange-200 border-orange-300' : 'from-white to-gray-50 border-gray-200'} border-2 p-6 rounded-xl">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-3xl font-bold ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-orange-500' : 'text-gray-600'}">
+                            ${index < 3 ? ['🥇', '🥈', '🥉'][index] : index + 1}
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold text-gray-800">${result.playerName}</div>
+                            <div class="text-sm text-gray-600">
+                                <i class="fas fa-calendar mr-1"></i>
+                                ${new Date(result.timestamp).toLocaleDateString('vi-VN')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-blue-600">${result.score} điểm</div>
+                        <div class="text-sm text-gray-600">
+                            <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full mr-2">
+                                ${result.level.toUpperCase()}
+                            </span>
+                            <span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                ${result.accuracy}%
+                            </span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">${result.ranking}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Admin functions
+        function loadAdminData() {
+            const results = getGameResults();
+            
+            // Update statistics
+            document.getElementById('totalPlayers').textContent = new Set(results.map(r => r.playerName)).size;
+            document.getElementById('totalGames').textContent = results.length;
+            document.getElementById('avgScore').textContent = results.length ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length) : 0;
+            document.getElementById('avgAccuracy').textContent = results.length ? Math.round(results.reduce((sum, r) => sum + r.accuracy, 0) / results.length) + '%' : '0%';
+            
+            // Update charts
+            updateCharts(results);
+            
+            // Update table
+            updatePlayerTable(results);
+        }
+
+        function updateCharts(results) {
+            // Level distribution chart
+            const levelCounts = { easy: 0, medium: 0, hard: 0 };
+            results.forEach(r => levelCounts[r.level]++);
+            
+            const levelChart = new Chart(document.getElementById('levelChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Dễ', 'Trung bình', 'Khó'],
+                    datasets: [{
+                        data: [levelCounts.easy, levelCounts.medium, levelCounts.hard],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Ranking distribution chart
+            const rankingCounts = {};
+            results.forEach(r => {
+                const ranking = r.ranking.split(' ')[1] || r.ranking;
+                rankingCounts[ranking] = (rankingCounts[ranking] || 0) + 1;
+            });
+            
+            const rankingChart = new Chart(document.getElementById('rankingChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(rankingCounts),
+                    datasets: [{
+                        label: 'Số người chơi',
+                        data: Object.values(rankingCounts),
+                        backgroundColor: ['#fbbf24', '#9ca3af', '#d97706', '#3b82f6', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePlayerTable(results) {
+            const tbody = document.getElementById('playerRecordsTable');
+            
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = results.reverse().map((result, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${result.playerName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${result.level.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${result.score}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${result.accuracy}%</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRankingClass(result.ranking)}">
+                            ${result.ranking}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(result.timestamp).toLocaleString('vi-VN')}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getRankingClass(ranking) {
+            if (ranking.includes('XUẤT SẮC')) return 'bg-yellow-100 text-yellow-800';
+            if (ranking.includes('GIỎI')) return 'bg-gray-100 text-gray-800';
+            if (ranking.includes('KHÁ')) return 'bg-orange-100 text-orange-800';
+            if (ranking.includes('TRUNG BÌNH')) return 'bg-blue-100 text-blue-800';
+            return 'bg-red-100 text-red-800';
+        }
+
+        function exportData() {
+            const results = getGameResults();
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `inversion_game_data_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function clearAllData() {
+            if (confirm('Bạn có chắc chắn muốn xóa tất cả dữ liệu? Hành động này không thể hoàn tác!')) {
+                localStorage.removeItem('inversionGameResults');
+                loadAdminData();
+                alert('Đã xóa tất cả dữ liệu thành công!');
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Handle Enter key for login forms
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('playerLoginScreen').classList.contains('hidden')) {
+                    loginPlayer();
+                } else if (!document.getElementById('adminLoginScreen').classList.contains('hidden')) {
+                    loginAdmin();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgEurFhSbAjTGt6vGXBcImiV%2FAHEsNNaE3mkiUOi%2BaHaNDYl6T2TaIwCHhlrV5opHlBIxV5ADwA7%2Fl1kPspZ3%2BEWl0dVH7aabw1j96LVrOVlbK%2FOJaOoQeBUFoytoEtFmKPFdEQfL68sIWaurSQOjUQwwjwWQZ7XgS8h1QlWfIjNHovhXV1svFquYz4tcP0ya7zmhq3jqzc%2F3NO62hoycObyOnvwnqzp%2FEerZdhVffpq497QMyTH1oDHi7%2Bbte7b2o5hGSzfcpWWItxDf6KUZsK2PItww9XezUiBcSEtKHvQIX5VIGy6UrT6owT1CLeb26RPjHb3UbNkeOOS0CW%2FNKtzUZeyGq7q%2BotubcThtbUPrKk93ZRU%2FkH94m9V0cz1gkfXXiG6A%2FsqtFuQn%2Fu7pICJ3fpyU2DiN%2FiNrIQP6ZZgMV1nSll%2FvcviK1kzoSF0LMavKnErTPhZs9%2FOWRiRU%2Fwevk1rrT76OuxOMt0Jbd%2BoWVoZ1ZNFIX0b5oRKy81D%2BOxZOYLj9CqsRbTghYqQMmE%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgEurFhSbAjTGt6vGXBcImiV/AHEsNNaE3mkiUOi+aHaNDYl6T2TaIwCHhlrV5opHlBIxV5ADwA7/l1kPspZ3+EWl0dVH7aabw1j96LVrOVlbK/OJaOoQeBUFoytoEtFmKPFdEQfL68sIWaurSQOjUQwwjwWQZ7XgS8h1QlWfIjNHovhXV1svFquYz4tcP0ya7zmhq3jqzc/3NO62hoycObyOnvwnqzp/EerZdhVffpq497QMyTH1oDHi7+bte7b2o5hGSzfcpWWItxDf6KUZsK2PItww9XezUiBcSEtKHvQIX5VIGy6UrT6owT1CLeb26RPjHb3UbNkeOOS0CW/NKtzUZeyGq7q+otubcThtbUPrKk93ZRU/kH94m9V0cz1gkfXXiG6A/sqtFuQn/u7pICJ3fpyU2DiN/iNrIQP6ZZgMV1nSll/vcviK1kzoSF0LMavKnErTPhZs9/OWRiRU/wevk1rrT76OuxOMt0Jbd+oWVoZ1ZNFIX0b5oRKy81D+OxZOYLj9CqsRbTghYqQMmE=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    
